@@ -12,3 +12,4 @@ login
     Input Username    standard_user
     Input Password    secret_sauce
     Click Botton    xpath://*[@id="login-button"]
+    Element Should Contain    xpath://*[@id="header_container"]/div[2]/span    Products

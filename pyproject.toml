@@ -6,8 +6,9 @@ authors = ["crrmail <preeyamon.tester@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10.4"
-
+python = ">=3.10.4,<3.13"
+robotframework = "^7.1.1"
+robotframework-seleniumlibrary = "^6.6.1"
 
 [build-system]
 requires = ["poetry-core"]
