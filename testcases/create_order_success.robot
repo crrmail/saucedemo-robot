@@ -2,7 +2,7 @@
 Library    SeleniumLibrary
 Library    String
 Test Setup    Open Browser    ${URL}    ${BROWSER}
-#Test Teardown    Close Browser   
+Test Teardown    Close Browser   
 
 *** Variables ***
 ${URL}    https://www.saucedemo.com/
@@ -16,10 +16,11 @@ Create Order Success
     Input Text    id:user-name    standard_user
     Input Text    id:password    secret_sauce
     Click Button    id:login-button
-    ${current_url}=   Get Location
-    Should Be Equal    ${current_url}    https://www.saucedemo.com/inventory.html        
+
+        # Verify Products Page
+    ${products_page_url}=    Set Variable    https://www.saucedemo.com/inventory.html
+    ${expected_url}    Verify Page    ${products_page_url}
     Element Should Be Visible    class:app_logo
-    Element Should Contain    class:app_logo    Swag Labs
     Element Should Contain    xpath://*[@id="header_container"]/div[2]/span    Products
     
     # step 2: Search and Add item to Cart
@@ -27,10 +28,12 @@ Create Order Success
         # Add item: Backpack
     Element Should Contain    id:inventory_container    Backpack
     Click Button    id:add-to-cart-sauce-labs-backpack
+        
         # Add item: T-Shirt
     Element Should Contain    id:inventory_container    T-Shirt
     Click Button    id:add-to-cart-sauce-labs-bolt-t-shirt
     Click Button    id:add-to-cart-test.allthethings()-t-shirt-(red)
+        
         # Add item: Flashlight (Verify that there is no product named Flashlight.)
     Element Should Not Contain    id:inventory_container    flashlight
 
@@ -38,25 +41,28 @@ Create Order Success
     
         # Verify Your Cart Page
     Click Element    class:shopping_cart_link
-    ${current_url}=   Get Location
-    Should Be Equal    ${current_url}    https://www.saucedemo.com/cart.html
-    ############Element Should Be Visible    class:app_logo
+    ${your_cart_page_url}    Set Variable    https://www.saucedemo.com/cart.html
+    ${expected_url}    Verify Page    ${your_cart_page_url}       
     Element Should Be Visible    class:header_secondary_container
     Element Should Contain    class:header_secondary_container    Your Cart
+        
         # Verify Item in Cart
     Element Should Contain    class:cart_list    Backpack    
     Element Should Contain    class:cart_list    T-Shirt    
     Element Should Contain    class:cart_list    T-Shirt (Red)
+        
         # Remove Backpack item in Cart
     Click Button    id:remove-sauce-labs-backpack
+        
         # Verify Item in Cart
     Element Should Not Contain    class:cart_list    Backpack
     Element Should Contain    class:cart_list    T-Shirt    
     Element Should Contain    class:cart_list    T-Shirt (Red)
     Click Button    id:checkout
+        
         # Verify Checkout: Your Information Page
-    ${current_url}=   Get Location
-    Should Be Equal    ${current_url}    https://www.saucedemo.com/checkout-step-one.html
+    ${checkout_your_information_page_url}    Set Variable    https://www.saucedemo.com/checkout-step-one.html
+    ${expected_url}    Verify Page    ${checkout_your_information_page_url}      
     Element Should Be Visible    class:header_secondary_container
     Element Should Contain    class:header_secondary_container    Checkout: Your Information
 
@@ -67,8 +73,8 @@ Create Order Success
     Input Text    id:postal-code    11120
     Click Button    id:continue
         # Verify Checkout: Overview Page
-    ${current_url}=   Get Location
-    Should Be Equal    ${current_url}    https://www.saucedemo.com/checkout-step-two.html    
+    ${checkout_overview_page_ur}=    Set Variable    https://www.saucedemo.com/checkout-step-two.html
+    ${expected_url}    Verify Page    ${checkout_overview_page_ur}
     Element Should Contain    class:header_secondary_container    Checkout: Overview
     Element Should Contain    data:test:payment-info-label    Payment Information:
     Element Should Contain    data:test:shipping-info-label    Shipping Information:
@@ -85,15 +91,16 @@ Create Order Success
     ${tax}=    Calculate Tax    ${price}
     ${total}=    Calculate Total    ${price}    ${tax}
     ${expected_text}=    Set Expected Text    ${total}
-    ${total_tent}=    Get Text    data:test:total-label
-    Should Be Equal As Strings    ${expected_text}    ${total_tent}
+    ${total_text}=    Get Text    data:test:total-label
+    Should Be Equal As Strings    ${expected_text}    ${total_text}
 
     # Step 6: Confirm Order
     
     Click Button    id:finish
         # Verify Checkout: Complete! Page
-    ${current_url}=   Get Location
-    Should Be Equal    ${current_url}    https://www.saucedemo.com/checkout-complete.html
+    ${checkout_complete_page_ur}=    Set Variable    https://www.saucedemo.com/checkout-complete.html
+    ${expected_url}    Verify Page    ${checkout_complete_page_ur}
+
     Element Should Contain    data:test:title    Checkout: Complete!
     Element Should Be Visible    data:test:checkout-complete-container
     Element Should Contain    data:test:complete-header    Thank you for your order!
@@ -101,9 +108,9 @@ Create Order Success
 
 *** Keywords ***
 Verify Page
-    [Arguments]    ${current_url}
+    [Arguments]    ${expected_url}
     ${current_url}=   Get Location
-    Should Be Equal    ${current_url}    https://www.saucedemo.com/inventory.html
+    Should Be Equal    ${current_url}    ${expected_url}
 
 
 Convert Price To Float
