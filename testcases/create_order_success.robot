@@ -100,6 +100,12 @@ Create Order Success
 
 
 *** Keywords ***
+Verify Page
+    [Arguments]    ${current_url}
+    ${current_url}=   Get Location
+    Should Be Equal    ${current_url}    https://www.saucedemo.com/inventory.html
+
+
 Convert Price To Float
     [Arguments]    ${price_text}
     ${price}=      Remove String    ${price_text}    Item total: $
